@@ -55,7 +55,13 @@ mount --make-rslave $TARGET/sys
 mount --rbind /dev $TARGET/dev
 mount --make-rslave $TARGET/dev
 mount --bind /run $TARGET/run
-cp /etc/resolv.conf $TARGET/etc/resolv.conf
+
+# Avoid copying /etc/resolv.conf if it's already the same
+if [ ! -f $TARGET/etc/resolv.conf ]; then
+    cp /etc/resolv.conf $TARGET/etc/resolv.conf
+else
+    echo "resolv.conf already exists on target, skipping copy."
+fi
 
 # === Step 3: Configure in chroot ===
 echo "🔧 Configuring system inside chroot..."
